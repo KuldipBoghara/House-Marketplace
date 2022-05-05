@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { toast } from 'react-toastify';
+
 import { ReactComponent as ArrowRightIcon } from '../assets/svg/keyboardArrowRightIcon.svg';
 import visibilityIcon from '../assets/svg/visibilityIcon.svg';
 
@@ -10,7 +13,7 @@ function SignIn() {
   //deStructure
   const { email, password } = formData;
 
-  const navigate = useNavigate;
+  const navigate = useNavigate();
 
   //e.target.id will give us the id of input tag to set up coresponding value
   const onChange = (e) => {
@@ -20,6 +23,26 @@ function SignIn() {
     }));
   };
 
+  const onSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const auth = getAuth();
+
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      if (userCredential.user) {
+        navigate('/');
+      }
+    } catch (error) {
+      toast.error('Opps wrong Credentials!!');
+    }
+  };
+
   return (
     <>
       <div className="pageContainer">
@@ -27,7 +50,7 @@ function SignIn() {
           <p className="pageHeader"> Welcome Back</p>
         </header>
 
-        <form>
+        <form onSubmit={onSubmit}>
           <input
             type="email"
             id="email"

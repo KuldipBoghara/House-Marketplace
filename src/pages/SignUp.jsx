@@ -5,7 +5,9 @@ import {
   createUserWithEmailAndPassword,
   updateProfile
 } from 'firebase/auth';
+import { setDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase.config.js';
+import { toast } from 'react-toastify';
 
 import { ReactComponent as ArrowRightIcon } from '../assets/svg/keyboardArrowRightIcon.svg';
 import visibilityIcon from '../assets/svg/visibilityIcon.svg';
@@ -48,9 +50,19 @@ function SignUP() {
         displayName: name
       });
 
+      const formDataCopy = { ...formData };
+      //We don't want to submit password to the databse
+      delete formDataCopy.password;
+
+      //adding timestamp
+      formDataCopy.timestamp = serverTimestamp();
+
+      //setDoc returns the promise
+      await setDoc(doc(db, 'users', user.uid), formDataCopy);
+
       navigate('/');
     } catch (error) {
-      console.log(error);
+      toast.error('Registration Fail');
     }
   };
 
