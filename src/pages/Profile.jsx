@@ -79,7 +79,7 @@ function Profile() {
               type="text"
               id="name"
               className={!changeDetails ? 'profileName' : 'profileNameActive'}
-              disable={!changeDetails}
+              disable={!changeDetails ? 1 : 0}
               value={name}
               onChange={onChange}
             />
@@ -88,7 +88,7 @@ function Profile() {
               type="text"
               id="email"
               className={!changeDetails ? 'profileEmail' : 'profileEmailActive'}
-              disable={!changeDetails}
+              disable={!changeDetails ? 1 : 0}
               value={email}
               onChange={onChange}
             />

@@ -1,5 +1,5 @@
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export const useAuthSatus = () => {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -35,7 +35,5 @@ export const useAuthSatus = () => {
     return unsub;
   });
 
-  console.log(loggedIn, checkingStatus);
-
-  return [loggedIn, checkingStatus];
+  return { loggedIn, checkingStatus };
 };

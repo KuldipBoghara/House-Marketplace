@@ -1,12 +1,16 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuthSatus } from '../hooks/useAuthSatus';
+import Spinner from './Spinner';
 
 const PrivateRoute = () => {
   const { loggedIn, checkingStatus } = useAuthSatus();
-  console.log(loggedIn, checkingStatus);
 
   if (checkingStatus) {
-    return <h3> Loading...</h3>;
+    return (
+      <h3>
+        <Spinner />
+      </h3>
+    );
   }
 
   //Outlet allows us to return child element
