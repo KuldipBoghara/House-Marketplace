@@ -12,6 +12,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '../firebase.config';
 import { toast } from 'react-toastify';
+import Spinner from '../component/Spinner';
 
 function Category() {
   const [listings, setListings] = useState(null);
@@ -37,20 +38,51 @@ function Category() {
         const querySnap = await getDocs(q);
 
         const listings = [];
-        console.log(querySnap);
 
         querySnap.forEach((doc) => {
-          console.log(doc.data());
+          return listings.push({
+            id: doc.id,
+            data: doc.data()
+          });
         });
+
+        setListings(listings);
+        setLoading(false);
       } catch (error) {
-        console.log(error);
+        console.log('Could not fetch Listngs');
       }
     };
 
     fetchListing();
-  });
+  }, [params.categoryName]);
 
-  return <div>Category</div>;
+  return (
+    <div className="category">
+      <header>
+        <p className="pageHeader">
+          {params.categoryName === 'rent'
+            ? 'Places for rent'
+            : 'Places for sale'}
+        </p>
+      </header>
+
+      {loading ? (
+        <Spinner />
+      ) : listings && listings.length > 0 ? (
+        <>
+          <main>
+            <ul className="categoryListings">
+              {listings.map((listing) => (
+                <h3 key={listing.id}>{listing.data.name}</h3>
+              ))}
+            </ul>
+          </main>
+        </>
+      ) : (
+        <p>No Listings for {params.categoryName}</p>
+      )}
+    </div>
+  );
 }
 
 export default Category;
