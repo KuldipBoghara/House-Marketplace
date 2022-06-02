@@ -50,7 +50,7 @@ function Category() {
         setListings(listings);
         setLoading(false);
       } catch (error) {
-        console.log('Could not fetch Listngs');
+        toast('Could not fetch Listngs');
       }
     };
 
