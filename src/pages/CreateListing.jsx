@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 import Spinner from '../component/Spinner';
+import { toast } from 'react-toastify';
 
 function CreateListing() {
   const [geolocationEnabled, setGeolocationEnabled] = useState(true);
@@ -57,7 +58,19 @@ function CreateListing() {
 
   const onSubmit = (e) => {
     e.prevendefault();
-    console.log(formData);
+    setLoading(true);
+
+    if (discountedPrice >= regularPrice) {
+      setLoading(false);
+      toast.error('Discounted Price needs to be less than regulae price');
+      return;
+    }
+
+    if (images.legth > 6) {
+      setLoading(false);
+      toast.error('Maximum of six images only');
+      return;
+    }
   };
 
   const onMutate = (e) => {
