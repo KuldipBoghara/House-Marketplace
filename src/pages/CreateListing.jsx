@@ -167,7 +167,7 @@ function CreateListing() {
     delete formDataCopy.images;
     delete formDataCopy.address;
     location && (formDataCopy.location = location);
-    !formDataCopy.offfer && delete formDataCopy.discountedPrice;
+    !formDataCopy.offer && delete formDataCopy.discountedPrice;
 
     const docRef = await addDoc(collection(db, 'listings'), formDataCopy);
 
@@ -453,12 +453,12 @@ const initialFormData = {
   bathrooms: 1,
   parking: false,
   furnished: false,
-  offfer: false,
+  offer: false,
   regularPrice: 0,
   discountedPrice: 0,
   images: {},
   latitude: 0,
-  loongitude: 0
+  longitude: 0
 };
 
 export default CreateListing;
