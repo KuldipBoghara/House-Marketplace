@@ -32,7 +32,44 @@ function Listing() {
     fetchListing();
   }, [navigate, params.listingId]);
 
-  return <div>Listing</div>;
+  if (loading) {
+    return <Spinner />;
+  }
+
+  return (
+    <main>
+      <div
+        className="shareIconDiv"
+        onClick={() => {
+          //To copy link
+          navigator.clipboard.writeText(window.location.href);
+          setShareLinkCopied(true);
+          setTimeout(() => {
+            setShareLinkCopied(false);
+          }, 2000);
+        }}
+      >
+        <img src={shareIcon} alt="shareIcon" />
+      </div>
+
+      {shareLinkCopied && <p className="linkCopied">Link Copied</p>}
+
+      <div className="listingDetails">
+        <p className="listingName">
+          {listing.name} - $
+          {listing.offer
+            ? listing.discountedPrice
+                .toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            : listing.regularPrice
+                .toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+        </p>
+
+        <p className="listingLocation">{listing.location}</p>
+      </div>
+    </main>
+  );
 }
 
 export default Listing;
