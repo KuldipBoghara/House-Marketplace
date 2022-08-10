@@ -49,7 +49,8 @@ function Listing() {
         modules={[Navigation, Pagination, Scrollbar, A11y]}
         slidesPerView={1}
         pagination={{ clickable: true }}
-        navigation
+        navigation={true}
+        a11y={true}
         style={{ height: '300px' }}
       >
         {listing.imgUrls.map((url, index) => {
@@ -60,8 +61,7 @@ function Listing() {
                 className="swiperSlideDiv"
                 style={{
                   background: `url${listing.imgUrls[index]} center no-repeat`,
-                  backgroundSize: 'cover',
-                  height: '50vw'
+                  backgroundSize: 'cover'
                 }}
               ></div>
             </SwiperSlide>
