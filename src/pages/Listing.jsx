@@ -54,13 +54,14 @@ function Listing() {
         style={{ height: '300px' }}
       >
         {listing.imgUrls.map((url, index) => {
-          console.log(url);
           return (
             <SwiperSlide key={index}>
               <div
                 className="swiperSlideDiv"
                 style={{
-                  background: `url${listing.imgUrls[index]} center no-repeat`,
+                  backgroundImage: `url(${url})`,
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat',
                   backgroundSize: 'cover'
                 }}
               ></div>
