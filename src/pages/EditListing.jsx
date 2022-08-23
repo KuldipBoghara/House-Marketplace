@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import {
   getStorage,
@@ -8,14 +8,15 @@ import {
   getDownloadURL
 } from 'firebase/storage';
 import { db } from '../firebase.config';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { doc, updateDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import Spinner from '../component/Spinner';
 import { toast } from 'react-toastify';
 import { v4 as uuidv4 } from 'uuid';
 
-function CreateListing() {
+function EditListing() {
   const [geolocationEnabled, setGeolocationEnabled] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [listing, setListing] = useState(null);
   const [formData, setFormData] = useState(initialFormData);
   const {
     type,
@@ -35,7 +36,40 @@ function CreateListing() {
 
   const auth = getAuth();
   const navigate = useNavigate();
+  const params = useParams();
 
+  //Redirect if listing is not user's
+  /* useEffect(() => {
+    console.log(listing);
+    console.log(auth.currentUser.uid);
+    if (listing && listing.userRef !== auth.currentUser.uid) {
+      toast.error('You can not edit that listing');
+      navigate('/');
+    }
+  }); */
+
+  //Fetch listing to edit
+  useEffect(() => {
+    setLoading(true);
+    console.log(params.listingId);
+    const fetchListing = async () => {
+      const docRef = doc(db, 'listings', params.listingId);
+
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setListing(docSnap);
+
+        setFormData({ ...docSnap.data(), address: docSnap.data().location });
+        setLoading(false);
+      } else {
+        navigate('/');
+        toast.error('Listing does not exist');
+      }
+    };
+    fetchListing();
+  }, [params.listingId, navigate]);
+
+  //Sets userRef to loggedIn User
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -121,17 +155,17 @@ function CreateListing() {
         uploadTask.on(
           'state_changed',
           (snapshot) => {
-            /*const progress =
+            /*  const progress =
               (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
             console.log('Upload is ' + progress + '% done');
-            /* switch (snapshot.state) {
+            switch (snapshot.state) {
               case 'paused':
                 console.log('Upload is paused');
                 break;
               case 'running':
                 console.log('Upload is running');
                 break;
-            }  */
+            } */
           },
           (error) => {
             // Handle unsuccessful uploads
@@ -140,7 +174,6 @@ function CreateListing() {
           () => {
             // Handle successful uploads on complete
             // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-
             getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
               resolve(downloadURL);
             });
@@ -150,11 +183,8 @@ function CreateListing() {
     };
 
     const imgUrls = await Promise.all(
-      [...images].map((image) => {
-        return storeImage(image);
-      })
-    ).catch((error) => {
-      console.log(error);
+      [...images].map((image) => storeImage(image))
+    ).catch(() => {
       setLoading(false);
       toast.error('Unable to upload Images');
       return;
@@ -172,7 +202,9 @@ function CreateListing() {
     delete formDataCopy.address;
     !formDataCopy.offer && delete formDataCopy.discountedPrice;
 
-    const docRef = await addDoc(collection(db, 'listings'), formDataCopy);
+    //update Listing
+    const docRef = doc(db, 'listings', params.listing);
+    await updateDoc(docRef, formDataCopy);
 
     setLoading(false);
     toast.success('Listings saved sucessfully');
@@ -213,7 +245,7 @@ function CreateListing() {
   return (
     <div className="profile">
       <header>
-        <p className="pageheader">Create a Listing</p>
+        <p className="pageHeader">Edit Listing</p>
       </header>
 
       <main>
@@ -441,7 +473,7 @@ function CreateListing() {
             required
           />
           <button type="submit" className="primaryButton createListingButton">
-            Create Listing
+            Update Listing
           </button>
         </form>
       </main>
@@ -464,4 +496,4 @@ const initialFormData = {
   longitude: 0
 };
 
-export default CreateListing;
+export default EditListing;
